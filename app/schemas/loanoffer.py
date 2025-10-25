@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 
 class LoanOfferBase(BaseModel):
@@ -17,5 +17,4 @@ class LoanOfferRead(LoanOfferBase):
     id: int
     monthly_payment: float
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
