@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 class LoanOfferBase(BaseModel):
@@ -8,7 +8,10 @@ class LoanOfferBase(BaseModel):
     term_months: int
 
 class LoanOfferCreate(LoanOfferBase):
-    pass
+    customer_id: int
+    loan_amount: float = Field(..., gt=0)
+    interest_rate: float = Field(..., gt=0)
+    term_months: int = Field(..., gt=0)
 
 class LoanOfferRead(LoanOfferBase):
     id: int
