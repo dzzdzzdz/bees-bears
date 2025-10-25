@@ -1,3 +1,4 @@
+import pytest
 from app.services.loan_service import calculate_monthly_payment
 
 def test_basic_amortization():
@@ -37,6 +38,26 @@ def test_short_term_loan():
     amount = 500
     annual_rate = 12
     term_months = 1
+    monthly = calculate_monthly_payment(amount, annual_rate, term_months)
+
+    r = annual_rate / 12 / 100
+    n = term_months
+    expected = round(amount * (r * (1 + r) ** n) / ((1 + r) ** n - 1), 2)
+    assert monthly == expected
+
+def test_negative_amount():
+    with pytest.raises(ValueError):
+        calculate_monthly_payment(-1000, 5.0, 12)
+
+def test_negative_interest():
+    with pytest.raises(ValueError):
+        calculate_monthly_payment(1000, -5.0, 12)
+
+def test_large_interest():
+    # Ensure formula handles very large interest
+    amount = 1000
+    annual_rate = 1000  # 1000% per year
+    term_months = 12
     monthly = calculate_monthly_payment(amount, annual_rate, term_months)
 
     r = annual_rate / 12 / 100
