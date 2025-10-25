@@ -31,6 +31,11 @@ def get_loan_offer_by_id(db: Session, loan_id: int) -> LoanOffer:
     return db.query(LoanOffer).filter(LoanOffer.id == loan_id).first()
 
 def calculate_monthly_payment(amount: float, annual_rate: float, term_months: int) -> float:
+    if amount <= 0 or term_months <= 0:
+        raise ValueError("Loan amount and term must be positive")
+    if annual_rate < 0:
+        raise ValueError("Interest rate cannot be negative")
+    
     r = annual_rate / 12 / 100
     n = term_months
     if r == 0:
