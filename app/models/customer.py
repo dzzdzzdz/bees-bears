@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
+from .loanoffer import LoanOffer
 
 class Customer(Base):
     __tablename__ = "customers"
