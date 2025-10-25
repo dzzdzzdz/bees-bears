@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.models.customer import Customer
 from app.schemas.customer import CustomerCreate
 from app.models.user import User
@@ -11,8 +12,12 @@ def create_customer(db: Session, customer_in: CustomerCreate, user: User) -> Cus
         created_by=user.id
     )
     db.add(customer)
-    db.commit()
-    db.refresh(customer)
+    try:
+        db.commit()
+        db.refresh(customer)
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Customer with this email already exists")
     return customer
 
 def get_customer_by_id(db: Session, customer_id: int):

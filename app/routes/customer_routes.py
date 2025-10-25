@@ -16,8 +16,11 @@ def post_customer(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    customer = create_customer(db, customer_in, current_user)
-    return customer
+    try:
+        customer = create_customer(db, customer_in, current_user)
+        return customer
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/{customer_id}", response_model=CustomerRead)
 def get_customer(
