@@ -74,13 +74,19 @@ This is my submission for the Bees & Bears Backend Bonanza
    pip install -r requirements.txt
    ```
 
-4. **Run the application**
+4. **Setup DB**
 
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+```bash
+python -m scripts.init_db
+```
 
-5. **Access the API**
+5. **Run the application**
+
+```bash
+uvicorn app.main:app --reload
+```
+
+6. **Access the API**
    - API Base URL: `http://localhost:8000`
    - Interactive API Documentation: `http://localhost:8000/docs`
    - Alternative Documentation: `http://localhost:8000/redoc`
@@ -192,6 +198,7 @@ The test suite includes:
 - `test_auth.py` - Authentication flow tests
 - `test_customers.py` - Customer management tests
 - `test_loanoffers.py` - Loan offer management tests
+- `test_customers_pagination.py` - Pagination tests for /customers endpoint
 
 ## Project Structure
 
@@ -222,14 +229,18 @@ bees&bears/
 │   │   ├── customer_service.py
 │   │   └── loan_service.py
 │   └── utils.py               # Utility functions
-├── tests/                      # Test suite
-│   ├── conftest.py            # Test configuration and fixtures
-│   ├── test_amortization.py   # Loan calculation tests
-│   ├── test_auth.py           # Authentication tests
-│   ├── test_customers.py      # Customer management tests
-│   └── test_loanoffers.py     # Loan offer tests
+├── tests/                            # Test suite
+│   ├── conftest.py                   # Test configuration and fixtures
+│   ├── test_amortization.py          # Loan calculation tests
+│   ├── test_auth.py                  # Authentication tests
+│   ├── test_customers.py             # Customer management tests
+│   └── test_loanoffers.py            # Loan offer tests
+|   └── test_customers_pagination.py  # Pagination tests on /customers endpoint
 ├── requirements.txt           # Python dependencies
-└── README.md                 # This file
+├── README.md                 # This file
+└── scripts/
+    ├── init_db.py            # used to set up DB (create tables)
+    └── seed_customers.py      # creates 50 dummy customers to test pagination
 ```
 
 ## Error Handling
@@ -262,5 +273,4 @@ The API includes comprehensive error handling:
 - Rate limiting for API endpoints
 - Comprehensive logging and monitoring
 - Database connection pooling
-- Environment-based configuration
 - Docker containerization
