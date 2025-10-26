@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from fastapi_cache.decorator import cache
 
 from app.schemas.customer import CustomerCreate, CustomerRead
 from app.models.customer import Customer
@@ -34,14 +33,8 @@ def get_customer(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found")
     return customer
 
-def list_customers_key_builder(func, *args, **kwargs):
-    user = kwargs.get("current_user")
-    limit = kwargs.get("limit", 10)
-    cursor = kwargs.get("cursor")
-    return f"list_customers:{user.id if user else 'anon'}:{limit}:{cursor}"
 
 @router.get("", response_model=dict)
-@cache(expire=60, key_builder=list_customers_key_builder)
 def list_customers(
     limit: int = Query(10, ge=1, le=100),
     cursor: Optional[int] = Query(None),
