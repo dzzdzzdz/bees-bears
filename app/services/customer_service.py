@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from typing import List
 from sqlalchemy.exc import IntegrityError
 from app.models.customer import Customer
 from app.schemas.customer import CustomerCreate
@@ -22,3 +23,9 @@ def create_customer(db: Session, customer_in: CustomerCreate, user: User) -> Cus
 
 def get_customer_by_id(db: Session, customer_id: int):
     return db.query(Customer).filter(Customer.id == customer_id).first()
+
+def list_customers(db: Session, user: User, limit: int = 10, cursor: int | None = None) -> List[Customer]:
+    query = db.query(Customer).filter(Customer.created_by == user.id)
+    if cursor:
+        query = query.filter(Customer.id > cursor)
+    return query.order_by(Customer.id).limit(limit).all()
