@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from app.schemas.customer import CustomerCreate, CustomerRead
 from app.models.customer import Customer
@@ -32,3 +32,25 @@ def get_customer(
     if not customer or customer.created_by != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found")
     return customer
+
+@router.get("", response_model=dict)
+def list_customers(
+    limit: int = Query(10, ge=1, le=100),
+    cursor: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    query = db.query(Customer).filter(Customer.created_by == current_user.id)
+    if cursor is not None:
+        query = query.filter(Customer.id > cursor)
+    query = query.order_by(Customer.id.asc()).limit(limit + 1)
+    customers = query.all()
+
+    has_next = len(customers) == limit + 1
+    data = customers[:limit]
+    next_cursor = data[-1].id if has_next else None
+
+    return {
+        "data": [CustomerRead.model_validate(c) for c in data],
+        "next_cursor": next_cursor
+    }
