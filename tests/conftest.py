@@ -35,3 +35,14 @@ def auth_headers(client, test_user):
     })
     token = resp.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture
+def seeded_customers(client, auth_headers):
+    """Create 20 dummy customers for testing pagination."""
+    customers = []
+    for i in range(20):
+        customer_data = {"name": f"Customer {i}", "email": f"customer{i}@example.com"}
+        create_response = client.post("/customers", json=customer_data, headers=auth_headers)
+        assert create_response.status_code == 201
+        customers.append(create_response.json())
+    return customers
